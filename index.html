@@ -32,10 +32,10 @@
 
     <main class="layout">
 
-      <!-- LEFT: request builder -->
+      <!-- LEFT: bulk request builder -->
       <section class="panel panel--builder" aria-labelledby="builderHeading">
         <div class="panel__head">
-          <h2 id="builderHeading">Add to request</h2>
+          <h2 id="builderHeading">Bulk request by store</h2>
           <span class="panel__hint">01</span>
         </div>
 
@@ -48,22 +48,11 @@
           </div>
 
           <div class="field">
-            <label for="tagSelect">Tag / bundle</label>
-            <select id="tagSelect" required>
-              <option value="" disabled selected>Select a tag&hellip;</option>
-            </select>
+            <label>Tag quantities for this store</label>
+            <div class="tag-grid" id="tagGrid"><!-- rows injected by script.js --></div>
           </div>
 
-          <div class="field field--qty">
-            <label for="qtyInput">Quantity</label>
-            <div class="qty-stepper">
-              <button type="button" class="qty-stepper__btn" id="qtyDown" aria-label="Decrease quantity">&minus;</button>
-              <input type="number" id="qtyInput" min="1" value="1" required>
-              <button type="button" class="qty-stepper__btn" id="qtyUp" aria-label="Increase quantity">+</button>
-            </div>
-          </div>
-
-          <button type="submit" class="btn btn--primary">Add tag request</button>
+          <button type="submit" class="btn btn--primary">Add store request</button>
           <p class="form-error" id="formError" role="alert"></p>
         </form>
 
@@ -74,15 +63,15 @@
         </div>
       </section>
 
-      <!-- RIGHT: queued line items -->
+      <!-- RIGHT: aggregated request summary -->
       <section class="panel panel--queue" aria-labelledby="queueHeading">
         <div class="panel__head">
-          <h2 id="queueHeading">Queued requests</h2>
+          <h2 id="queueHeading">Request summary</h2>
           <span class="panel__hint">02</span>
         </div>
 
         <div class="queue-list" id="queueList">
-          <p class="empty-note" id="queueEmpty">No tags requested yet. Add one on the left to get started.</p>
+          <p class="empty-note" id="queueEmpty">No tags requested yet. Add a store request on the left to get started.</p>
         </div>
       </section>
 
@@ -113,7 +102,7 @@
     </section>
 
     <footer class="foot-note">
-      <p>&copy; 2026 John Kyle Bardeloza. All rights reserved. </p>
+      <p>&copy; 2026 John Kyle Bardeloza. All rights reserved.</p>
     </footer>
 
   </div>
