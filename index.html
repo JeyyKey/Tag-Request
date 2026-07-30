@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tag Request — DJI Bundle Tags</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <div class="frame">
+
+    <header class="topbar">
+      <div class="topbar__id">
+        <span class="topbar__mark">◎</span>
+        <div>
+          <h1 class="topbar__title">Tag Request</h1>
+          <p class="topbar__sub">Bundle price-tag order form &mdash; 17 stores</p>
+        </div>
+      </div>
+      <div class="topbar__meta">
+        <div class="meta-chip">
+          <span class="meta-chip__label">Grand Total</span>
+          <span class="meta-chip__value" id="grandTotal">0</span>
+        </div>
+        <div class="meta-chip">
+          <span class="meta-chip__label">Line Items</span>
+          <span class="meta-chip__value" id="lineCount">0</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="layout">
+
+      <!-- LEFT: request builder -->
+      <section class="panel panel--builder" aria-labelledby="builderHeading">
+        <div class="panel__head">
+          <h2 id="builderHeading">Add to request</h2>
+          <span class="panel__hint">01</span>
+        </div>
+
+        <form id="requestForm" class="builder-form" autocomplete="off">
+          <div class="field">
+            <label for="storeSelect">Store</label>
+            <select id="storeSelect" required>
+              <option value="" disabled selected>Select a store&hellip;</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="tagSelect">Tag / bundle</label>
+            <select id="tagSelect" required>
+              <option value="" disabled selected>Select a tag&hellip;</option>
+            </select>
+          </div>
+
+          <div class="field field--qty">
+            <label for="qtyInput">Quantity</label>
+            <div class="qty-stepper">
+              <button type="button" class="qty-stepper__btn" id="qtyDown" aria-label="Decrease quantity">&minus;</button>
+              <input type="number" id="qtyInput" min="1" value="1" required>
+              <button type="button" class="qty-stepper__btn" id="qtyUp" aria-label="Increase quantity">+</button>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn--primary">Add tag request</button>
+          <p class="form-error" id="formError" role="alert"></p>
+        </form>
+
+        <div class="panel__foot">
+          <button type="button" class="btn btn--ghost" id="exportCsv">Export CSV</button>
+          <button type="button" class="btn btn--ghost" id="printSheet">Print</button>
+          <button type="button" class="btn btn--danger-ghost" id="clearAll">Clear all</button>
+        </div>
+      </section>
+
+      <!-- RIGHT: queued line items -->
+      <section class="panel panel--queue" aria-labelledby="queueHeading">
+        <div class="panel__head">
+          <h2 id="queueHeading">Queued requests</h2>
+          <span class="panel__hint">02</span>
+        </div>
+
+        <div class="queue-list" id="queueList">
+          <p class="empty-note" id="queueEmpty">No tags requested yet. Add one on the left to get started.</p>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- SUMMARY MATRIX -->
+    <section class="panel panel--matrix" aria-labelledby="matrixHeading">
+      <div class="panel__head">
+        <h2 id="matrixHeading">Store &times; Tag summary</h2>
+        <span class="panel__hint">03</span>
+      </div>
+
+      <div class="matrix-scroll">
+        <table class="matrix" id="matrixTable">
+          <thead>
+            <tr id="matrixHeadRow">
+              <th class="matrix__corner">MODEL</th>
+            </tr>
+          </thead>
+          <tbody id="matrixBody"></tbody>
+          <tfoot>
+            <tr id="matrixFootRow">
+              <th>TOTAL PER STORE</th>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </section>
+
+    <footer class="foot-note">
+      <p>Values update live as tags are added. Export CSV to share the request sheet with the print/tag team.</p>
+    </footer>
+
+  </div>
+
+<script src="script.js"></script>
+</body>
+</html>
