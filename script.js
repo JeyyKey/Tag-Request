@@ -56,10 +56,7 @@
 
   // ---------- DOM refs ----------
   const storeSelect = document.getElementById('storeSelect');
-  const tagSelect = document.getElementById('tagSelect');
-  const qtyInput = document.getElementById('qtyInput');
-  const qtyUp = document.getElementById('qtyUp');
-  const qtyDown = document.getElementById('qtyDown');
+  const tagGrid = document.getElementById('tagGrid');
   const form = document.getElementById('requestForm');
   const formError = document.getElementById('formError');
 
@@ -77,66 +74,81 @@
   const printBtn = document.getElementById('printSheet');
   const clearAllBtn = document.getElementById('clearAll');
 
-  // ---------- init selects ----------
-  function populateSelect(selectEl, items, placeholder) {
-    items.forEach((item) => {
-      const opt = document.createElement('option');
-      opt.value = item;
-      opt.textContent = item;
-      selectEl.appendChild(opt);
+  // ---------- init store select ----------
+  STORES.forEach((store) => {
+    const opt = document.createElement('option');
+    opt.value = store;
+    opt.textContent = store;
+    storeSelect.appendChild(opt);
+  });
+
+  // ---------- init bulk tag-quantity grid ----------
+  // One row per tag, each with its own quantity input, so a whole
+  // store's request can be filled in and submitted in one go.
+  TAGS.forEach((tag, index) => {
+    const row = document.createElement('div');
+    row.className = 'tag-row';
+    row.dataset.tag = tag;
+
+    const inputId = `tagqty-${index}`;
+    row.innerHTML = `
+      <label class="tag-row__name" for="${inputId}">${escapeHtml(tag)}</label>
+      <input type="number" id="${inputId}" class="tag-row__input" min="0" step="1" placeholder="0">
+    `;
+
+    const input = row.querySelector('input');
+    input.addEventListener('input', () => {
+      row.classList.toggle('has-qty', parseInt(input.value, 10) > 0);
+    });
+
+    tagGrid.appendChild(row);
+  });
+
+  function resetTagGrid() {
+    tagGrid.querySelectorAll('.tag-row').forEach((row) => {
+      row.querySelector('input').value = '';
+      row.classList.remove('has-qty');
     });
   }
 
-  populateSelect(storeSelect, STORES);
-  populateSelect(tagSelect, TAGS);
-
-  // ---------- qty stepper ----------
-  qtyUp.addEventListener('click', () => {
-    qtyInput.value = Math.max(1, (parseInt(qtyInput.value, 10) || 0) + 1);
-  });
-  qtyDown.addEventListener('click', () => {
-    qtyInput.value = Math.max(1, (parseInt(qtyInput.value, 10) || 1) - 1);
-  });
-
-  // ---------- form submit ----------
+  // ---------- form submit (bulk, per store) ----------
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     formError.textContent = '';
 
     const store = storeSelect.value;
-    const tag = tagSelect.value;
-    const qty = parseInt(qtyInput.value, 10);
-
-    if (!store || !tag) {
-      formError.textContent = 'Choose a store and a tag before adding.';
-      return;
-    }
-    if (!qty || qty < 1) {
-      formError.textContent = 'Quantity must be at least 1.';
+    if (!store) {
+      formError.textContent = 'Choose a store before adding.';
       return;
     }
 
-    // Merge into an existing line for the same store + tag, if present
-    const existing = queue.find((q) => q.store === store && q.tag === tag);
-    if (existing) {
-      existing.qty += qty;
-    } else {
-      queue.push({ id: nextId++, store, tag, qty });
+    const rows = [...tagGrid.querySelectorAll('.tag-row')];
+    const entries = rows
+      .map((row) => ({
+        tag: row.dataset.tag,
+        qty: parseInt(row.querySelector('input').value, 10) || 0
+      }))
+      .filter((entry) => entry.qty > 0);
+
+    if (entries.length === 0) {
+      formError.textContent = 'Enter a quantity for at least one tag.';
+      return;
     }
 
-    form.reset();
+    entries.forEach(({ tag, qty }) => {
+      const existing = queue.find((q) => q.store === store && q.tag === tag);
+      if (existing) {
+        existing.qty += qty;
+      } else {
+        queue.push({ id: nextId++, store, tag, qty });
+      }
+    });
+
     storeSelect.selectedIndex = 0;
-    tagSelect.selectedIndex = 0;
-    qtyInput.value = 1;
+    resetTagGrid();
 
     render();
   });
-
-  // ---------- remove a line ----------
-  function removeLine(id) {
-    queue = queue.filter((q) => q.id !== id);
-    render();
-  }
 
   clearAllBtn.addEventListener('click', () => {
     if (queue.length === 0) return;
@@ -146,7 +158,7 @@
     }
   });
 
-  // ---------- render: queue list ----------
+  // ---------- render: request summary (aggregated per tag) ----------
   function renderQueue() {
     queueList.innerHTML = '';
 
@@ -156,22 +168,30 @@
       return;
     }
 
-    // newest first
-    [...queue].reverse().forEach((item) => {
+    // Aggregate quantities per tag across every store, in TAGS order
+    const totalsByTag = new Map();
+    queue.forEach((item) => {
+      totalsByTag.set(item.tag, (totalsByTag.get(item.tag) || 0) + item.qty);
+    });
+
+    let grandTotal = 0;
+    TAGS.filter((tag) => totalsByTag.has(tag)).forEach((tag) => {
+      const count = totalsByTag.get(tag);
+      grandTotal += count;
+
       const row = document.createElement('div');
-      row.className = 'queue-item';
+      row.className = 'summary-item';
       row.innerHTML = `
-        <div class="queue-item__info">
-          <div class="queue-item__tag">${escapeHtml(item.tag)}</div>
-          <div class="queue-item__store">${escapeHtml(item.store)}</div>
-        </div>
-        <span class="queue-item__qty">&times;${item.qty}</span>
-        <button type="button" class="queue-item__remove" title="Remove" aria-label="Remove line">&times;</button>
-        <span></span>
+        <span class="summary-item__name">${escapeHtml(tag)}</span>
+        <span class="summary-item__count">${count}</span>
       `;
-      row.querySelector('.queue-item__remove').addEventListener('click', () => removeLine(item.id));
       queueList.appendChild(row);
     });
+
+    const totalRow = document.createElement('div');
+    totalRow.className = 'summary-total';
+    totalRow.innerHTML = `<span>Total tags requested</span><span>${grandTotal}</span>`;
+    queueList.appendChild(totalRow);
   }
 
   // ---------- render: matrix ----------
