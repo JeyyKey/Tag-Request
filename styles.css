@@ -7,19 +7,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap');
 
 :root{
-  --ink:            #1c1a17;
-  --paper:          #f6f1e7;
-  --paper-dim:      #ece4d4;
-  --card:           #fffdf8;
-  --line:           #ddd2ba;
-  --line-soft:      #e9e1cd;
-  --amber:          #d97a1f;
-  --amber-deep:     #b8620f;
-  --amber-tint:     #fbe6c8;
-  --green:          #4c7a4f;
-  --green-tint:     #dcebd9;
-  --red:            #a8412f;
-  --red-tint:       #f4dcd7;
+  --ink:            #111111;
+  --paper:          #f5f5f5;
+  --paper-dim:      #e8e8e8;
+  --card:           #ffffff;
+  --line:           #d9d9d9;
+  --line-soft:      #e6e6e6;
+  --amber:          #e60012;
+  --amber-deep:     #c40010;
+  --amber-tint:     #fbdadd;
+  --green:          #111111;
+  --green-tint:     #ececec;
+  --red:            #c40010;
+  --red-tint:       #fbdadd;
 
   --font-display:   'Space Grotesk', sans-serif;
   --font-body:      'Inter', sans-serif;
@@ -90,7 +90,7 @@ body{
 .topbar__sub{
   margin: 0;
   font-size: 13px;
-  color: #6b6255;
+  color: #5a5a5a;
 }
 
 .topbar__meta{
@@ -113,7 +113,7 @@ body{
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #c9c0ae;
+  color: #bdbdbd;
 }
 
 .meta-chip__value{
@@ -164,7 +164,7 @@ body{
 .panel__hint{
   font-family: var(--font-mono);
   font-size: 11px;
-  color: #b2a891;
+  color: #a3a3a3;
   letter-spacing: 0.1em;
 }
 
@@ -188,7 +188,7 @@ body{
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #857a68;
+  color: #6e6e6e;
 }
 
 select, input[type="number"]{
@@ -367,7 +367,7 @@ select:focus, input:focus{
 }
 
 .empty-note{
-  color: #9c927e;
+  color: #8a8a8a;
   font-size: 13px;
   padding: 20px 8px;
   text-align: center;
@@ -411,7 +411,7 @@ select:focus, input:focus{
 
 .queue-item__store{
   font-size: 11.5px;
-  color: #8a806e;
+  color: #7a7a7a;
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -431,7 +431,7 @@ select:focus, input:focus{
 .queue-item__remove{
   background: none;
   border: none;
-  color: #a8412f;
+  color: #c40010;
   font-size: 16px;
   cursor: pointer;
   padding: 2px 4px;
@@ -544,7 +544,7 @@ table.matrix tbody tr:nth-child(even) th{
 
 table.matrix tbody td{
   font-family: var(--font-mono);
-  color: #6b6255;
+  color: #5a5a5a;
 }
 
 table.matrix tbody td.has-value{
@@ -582,7 +582,7 @@ table.matrix tfoot th{
 
 .foot-note{
   text-align: center;
-  color: #9c927e;
+  color: #8a8a8a;
   font-size: 12px;
 }
 .foot-note p{ margin: 0; }
