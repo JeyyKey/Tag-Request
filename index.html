@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DJI Tags Request</title>
+<title>DJI Tag Request</title>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -14,8 +14,8 @@
       <div class="topbar__id">
         <span class="topbar__mark">◎</span>
         <div>
-          <h1 class="topbar__title"> DJI Tag Request</h1>
-          <p class="topbar__sub">price-tag order form</p>
+          <h1 class="topbar__title">DJI Tag Request</h1>
+          <p class="topbar__sub">Price-tag order form &mdash; 17 stores</p>
         </div>
       </div>
       <div class="topbar__meta">
@@ -30,36 +30,111 @@
       </div>
     </header>
 
+    <!-- ADMIN: extend the catalog -->
+    <section class="panel panel--admin" aria-labelledby="adminHeading">
+      <button type="button" class="admin-toggle" id="adminToggle" aria-expanded="false">
+        <span>Admin: add new product tag or store</span>
+        <span class="admin-toggle__chevron" id="adminChevron">&#9662;</span>
+      </button>
+
+      <div class="admin-body" id="adminBody" hidden>
+        <div class="admin-col">
+          <h3 class="admin-col__title">Add new product tag</h3>
+          <div class="field">
+            <label for="newProductName">Product / tag name</label>
+            <input type="text" id="newProductName" placeholder="e.g. DJI Mic 3 Windscreen Pack">
+          </div>
+          <div class="field">
+            <label for="newProductCategory">Category</label>
+            <select id="newProductCategory">
+              <option value="__new__">+ New category&hellip;</option>
+            </select>
+          </div>
+          <div class="field" id="newCategoryField">
+            <label for="newCategoryName">New category name</label>
+            <input type="text" id="newCategoryName" placeholder="e.g. TRIPODS &amp; MOUNTS">
+          </div>
+          <button type="button" class="btn btn--secondary" id="addProductBtn">Add product tag</button>
+          <p class="form-error" id="adminProductError" role="alert"></p>
+        </div>
+
+        <div class="admin-col">
+          <h3 class="admin-col__title">Add new store</h3>
+          <div class="field">
+            <label for="newStoreName">Store name</label>
+            <input type="text" id="newStoreName" placeholder="e.g. SM Baguio">
+          </div>
+          <button type="button" class="btn btn--secondary" id="addStoreBtn">Add store</button>
+          <p class="form-error" id="adminStoreError" role="alert"></p>
+        </div>
+      </div>
+    </section>
+
     <main class="layout">
 
-      <!-- LEFT: bulk request builder -->
+      <!-- LEFT: mix & match combo builder -->
       <section class="panel panel--builder" aria-labelledby="builderHeading">
         <div class="panel__head">
-          <h2 id="builderHeading">Bulk request by store</h2>
+          <h2 id="builderHeading">Mix &amp; match request</h2>
           <span class="panel__hint">01</span>
         </div>
 
         <form id="requestForm" class="builder-form" autocomplete="off">
           <div class="field">
-            <label for="storeSelect">Store</label>
-            <select id="storeSelect" required>
-              <option value="" disabled selected>Select a store&hellip;</option>
-            </select>
+            <div class="field__label-row">
+              <label>Store choices</label>
+              <button type="button" class="link-btn" id="storesSelectAll">Select all</button>
+            </div>
+            <div class="store-list" id="storeList"></div>
           </div>
 
           <div class="field">
-            <label>Tag quantities for this store</label>
-            <div class="tag-grid" id="tagGrid"><!-- rows injected by script.js --></div>
+            <label for="productSearch">Search products by tag</label>
+            <div class="product-filters">
+              <input type="search" id="productSearch" placeholder="Search e.g. &ldquo;Mic 3&rdquo;, &ldquo;Neo&rdquo;, &ldquo;Pocket&rdquo;&hellip;">
+              <select id="categoryFilter">
+                <option value="">All categories</option>
+              </select>
+            </div>
+            <div class="field__label-row">
+              <span class="product-list__count" id="productCount"></span>
+              <button type="button" class="link-btn" id="productsSelectAll">Select all shown</button>
+            </div>
+            <div class="product-list" id="productList"></div>
           </div>
 
-          <button type="submit" class="btn btn--primary">Add store request</button>
+          <div class="field">
+            <label>Selected combo</label>
+            <div class="combo-chips" id="comboChips">
+              <span class="chips-empty" id="chipsEmpty">No products selected yet &mdash; check items above to build a combo.</span>
+            </div>
+          </div>
+
+          <div class="field field--qty">
+            <label for="qtyInput">Quantity per store</label>
+            <div class="qty-stepper">
+              <button type="button" class="qty-stepper__btn" id="qtyDown" aria-label="Decrease quantity">&minus;</button>
+              <input type="number" id="qtyInput" min="1" value="1">
+              <button type="button" class="qty-stepper__btn" id="qtyUp" aria-label="Increase quantity">+</button>
+            </div>
+          </div>
+
+          <button type="button" class="btn btn--secondary" id="addComboBtn">Stage combo</button>
+
+          <div class="field">
+            <label>Staged combos</label>
+            <div class="pending-list" id="pendingList">
+              <p class="empty-note" id="pendingEmpty">Nothing staged yet.</p>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn--primary">Submit to selected stores</button>
           <p class="form-error" id="formError" role="alert"></p>
         </form>
 
         <div class="panel__foot">
           <button type="button" class="btn btn--ghost" id="exportCsv">Export CSV</button>
           <button type="button" class="btn btn--ghost" id="printSheet">Print</button>
-          <button type="button" class="btn btn--danger-ghost" id="clearAll">Clear all</button>
         </div>
       </section>
 
@@ -71,7 +146,7 @@
         </div>
 
         <div class="queue-list" id="queueList">
-          <p class="empty-note" id="queueEmpty">No tags requested yet. Add a store request on the left to get started.</p>
+          <p class="empty-note" id="queueEmpty">No tags requested yet. Build a combo and submit a store request to get started.</p>
         </div>
       </section>
 
@@ -98,6 +173,37 @@
             </tr>
           </tfoot>
         </table>
+      </div>
+    </section>
+
+    <!-- MANAGE ENTRIES PER STORE -->
+    <section class="panel panel--manage" aria-labelledby="manageHeading">
+      <div class="panel__head">
+        <h2 id="manageHeading">Manage requests by store</h2>
+        <span class="panel__hint">04</span>
+      </div>
+
+      <div class="manage-toolbar">
+        <div class="field field--inline">
+          <label for="manageStoreFilter">Store</label>
+          <select id="manageStoreFilter">
+            <option value="">All stores with requests</option>
+          </select>
+        </div>
+        <button type="button" class="btn btn--danger-ghost btn--sm" id="clearAllOpen">Clear all stores&hellip;</button>
+      </div>
+
+      <div class="clear-confirm" id="clearConfirm" hidden>
+        <p class="clear-confirm__warning">This deletes every staged and submitted request for all 17 stores. Type <strong>CLEAR</strong> to confirm.</p>
+        <div class="clear-confirm__row">
+          <input type="text" id="clearConfirmInput" placeholder="Type CLEAR" autocomplete="off">
+          <button type="button" class="btn btn--danger" id="clearConfirmBtn" disabled>Confirm clear</button>
+          <button type="button" class="btn btn--ghost" id="clearConfirmCancel">Cancel</button>
+        </div>
+      </div>
+
+      <div class="manage-list" id="manageList">
+        <p class="empty-note" id="manageEmpty">No submitted requests yet. Submit a store request above to manage it here.</p>
       </div>
     </section>
 
